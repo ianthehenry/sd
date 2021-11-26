@@ -1,0 +1,34 @@
+#compdef sd
+
+function __list_commands {
+  local -a subcmds
+  local line dir next
+  dir="$1"
+  # the parens after the glob contains "glob qualifiers" (see man zshexpn):
+  # * executable
+  # - follow symlinks
+  # , "or" separator
+  # / directories
+  for file in "$dir"/*(-*,/); do
+    command=$(basename "$file")
+    helpfile="$file.help"
+    if [[ -f "$helpfile" ]]; then
+      help=$(head -n1 "$helpfile")
+    elif [[ -d "$file" ]]; then
+      help="$command commands"
+    else
+      help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+    fi
+    subcmds=($subcmds "$command:\"$help\"")
+  done
+
+  _arguments -C ": :(($subcmds))" \
+    "*::arg:->args"
+
+  next="$dir/$line[1]"
+  if [[ ! -z $line[1] && -d "$next" ]]; then
+    __list_commands "$next"
+  fi
+}
+
+__list_commands ${SD_ROOT:-"$HOME/sd"}

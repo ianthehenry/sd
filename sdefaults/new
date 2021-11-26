@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script=$(sd which "$@")
+
+mkdir -p "$(dirname "$script")"
+cat > "$script" <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+EOF
+
+chmod +x "$script"
+sd edit "$@"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+root=${SD_ROOT:-$HOME/sd}
+script=$(echo "$@" | tr ' ' /)
+echo "$root/$script"

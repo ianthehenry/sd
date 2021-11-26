@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+file=$(sd which "$@")
+helpfile="$file.help"
+if [[ -d "$file" ]]; then
+  # sd will print subcommands when given a directory
+  sd "$@"
+elif [[ -f "$helpfile" ]]; then
+  cat "$helpfile"
+else
+  help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+  if [[ -z "$help" ]]; then
+    echo "there is no help for you here" >&2
+    exit 1
+  else
+    echo "$help"
+  fi
+fi
