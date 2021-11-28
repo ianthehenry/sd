@@ -123,27 +123,35 @@ There are two ways to use `sd`:
 1. source the `sd` file, which will define the shell function `sd`
 2. treat `sd` as a regular executable and put it somewhere on your `PATH`
 
-I prefer to use `sd` as a regular executable, but the function approach is convenient for integration with shell plugin managers like [antigen](https://github.com/zsh-users/antigen), which will also set up `fpath` for you so that completion will work without effort.
+I prefer to use `sd` as a regular executable, but the function approach is more convenient if you already use a shell plugin manager that knows how to set up `fpath` automatically.
 
-Note that you cannot invoke "recursive sd" (that is, write scripts that themselves invoke `sd`) if you use the function approach. This includes all of the helper scripts in `sdefaults/` (see below).
+Note that you cannot invoke "recursive `sd`" (that is, write scripts that themselves invoke `sd`) if you use the function approach. This includes all of the helper scripts in `sdefaults/` (explained below).
 
-## Installation with a shell plugin manager
+## Installation as a shell function
 
-A convenient way to install and manage **sd** is to do it via a plugin manager. Not only for the ease of install and enable/disable; it will also help you to manage any update, as usually they come with a command like `antigen update` to update a single or all your plugins.
+You can just source `sd` in your `.zshrc` and set up completion manually (as described below), but `sd` is designed to be compatible with shell plugin managers.
 
-### Antigen (ZSH)
+### [Antigen](https://github.com/zsh-users/antigen) (`zsh`)
 
-Add to your `.zshrc`:
+Add this line to your `.zshrc`:
 
-```console
+```shell
 antigen bundle ianthehenry/sd
+```
+
+Then you can update `sd` by running:
+
+```
+$ antigen update
 ```
 
 ### Other plugin managers
 
-Follow the instructions of the plugin manager you use. It usually requires to add a single line to your `.zshrc` (or shell equivalent file).
+You can *probably* install `sd` with other plugin managers as well, but I haven't tested any.
 
 ## Installation as a regular script
+
+`sd` is not currently packaged in any package manager that I am aware of, but it should be pretty easy if you want to package it for your distribution. It's just a single script and a single completion file. Until that day:
 
 - Put the `sd` script somewhere on your path.
 
