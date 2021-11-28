@@ -46,25 +46,31 @@ set -euo pipefail
 nix-env -irf ~/dotfiles/user.nix
 ```
 
-    $ sd nix sync --help
-    make user environment match ~/dotfiles/user.nix
+That will produce the following help output (note that it only prints the first contiguous comment block):
 
-    This will remove any packages you've installed with nix-env
-    but have not added to user.nix. To see exactly what this
-    will do, run:
+```
+$ sd nix sync --help
+make user environment match ~/dotfiles/user.nix
 
-        sd nix diff
+This will remove any packages you've installed with nix-env
+but have not added to user.nix. To see exactly what this
+will do, run:
 
-If `--help` is run with a directory, it prints a command listing instead:
+    sd nix diff
+```
 
-    $ sd nix --help
-    nix commands
+If you run `--help` for a directory, it prints a command listing instead:
 
-    install    -- <package> use --latest to install from nixpkgs-unstable
-    shell      -- add gcroots for shell.nix
-    diff       -- prints what will happen if you run sync
-    info       -- <package> prints package description
-    sync       -- make user environment match ~/dotfiles/user.nix
+```
+$ sd nix --help
+nix commands
+
+install    -- <package> use --latest to install from nixpkgs-unstable
+shell      -- add gcroots for shell.nix
+diff       -- prints what will happen if you run sync
+info       -- <package> prints package description
+sync       -- make user environment match ~/dotfiles/user.nix
+```
 
 ## `--new`
 
