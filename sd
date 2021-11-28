@@ -128,9 +128,10 @@ sd() (
   set -euo pipefail
 
   local target=${SD_ROOT:-$HOME/sd}
+  local arg
 
   while [[ $# -gt 0 ]]; do
-    local arg="$1"
+    arg="$1"
     if [[ -d "$target/$arg" ]]; then
       target="$target/$arg"
       shift
