@@ -129,7 +129,19 @@ Note that you cannot invoke "recursive sd" (that is, write scripts that themselv
 
 ## Installation with a shell plugin manager
 
-I don't know how to do this.
+A convenient way to install and manage **sd** is to do it via a plugin manager. Not only for the ease of install and enable/disable; it will also help you to manage any update, as usually they come with a command like `antigen update` to update a single or all your plugins.
+
+### Antigen (ZSH)
+
+Add to your `.zshrc`:
+
+```console
+antigen bundle ianthehenry/sd
+```
+
+### Other plugin managers
+
+Follow the instructions of the plugin manager you use. It usually requires to add a single line to your `.zshrc` (or shell equivalent file).
 
 ## Installation as a regular script
 
