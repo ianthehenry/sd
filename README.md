@@ -57,7 +57,7 @@ nix-env -irf ~/dotfiles/user.nix
 
 If `--help` is run with a directory, it prints a command listing instead:
 
-    $ sd nix
+    $ sd nix --help
     nix commands
 
     install    -- <package> use --latest to install from nixpkgs-unstable
@@ -94,11 +94,11 @@ If no body is supplied after `--new`, `sd` will open the script for editing.
 
 Prints the contents of the script. See `SD_CAT` below.
 
-# `--edit`
+## `--edit`
 
 Open the script in an editor. See `SD_EDITOR` below.
 
-# `--which`
+## `--which`
 
 Prints the path of the script.
 
@@ -130,7 +130,7 @@ fpath=(~/src/sd/completions $fpath)
 
 To your `~/.zshrc` file.
 
-# `sd help command` vs. `sd command --help`
+## `sd help command` vs. `sd command --help`
 
 There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if you like. They'll let you type `sd cat foo bar` instead of `sd foo bar --cat` or `sd new foo -- echo hi` instead of `sd foo --new echo hi` (and so on for each of the built-in commands).
 
