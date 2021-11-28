@@ -118,29 +118,41 @@ Prints the path of the script.
 
 # Installation
 
-`sd` isn't packaged anywhere I'm aware of, so you'll have to install it the old-fashioned way:
+There are two ways to use `sd`:
 
-- Put `bin/sd` somewhere on your path.
+1. source the `sd` file, which will define the shell function `sd`
+2. treat `sd` as a regular executable and put it somewhere on your `PATH`
+
+I prefer to use `sd` as a regular executable, but the function approach is convenient for integration with shell plugin managers like [antigen](https://github.com/zsh-users/antigen), which will also set up `fpath` for you so that completion will work without effort.
+
+Note that you cannot invoke "recursive sd" (that is, write scripts that themselves invoke `sd`) if you use the function approach. This includes all of the helper scripts in `sdefaults/` (see below).
+
+## Installation with a shell plugin manager
+
+I don't know how to do this.
+
+## Installation as a regular script
+
+- Put the `sd` script somewhere on your path.
 
 I like to symlink it to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, run something like:
 
-    $ ln -s ~/src/sd/bin/sd ~/bin/sd
+    $ ln -s ~/src/sd/sd ~/bin/sd
 
-- Put `completions/_sd` somewhere on your `fpath`.
+- Put `_sd` somewhere on your `fpath`.
 
-If you've cloned this repo to `~/src/sd`, add something like this:
+If you've cloned this repo to `~/src/sd`, add something like this to your `~/.zshrc` file:
 
 ```shell
-fpath=(~/src/sd/completions $fpath)
+fpath=(~/src/sd $fpath)
+export fpath
 ```
-
-To your `~/.zshrc` file.
 
 ## `sd help command` vs. `sd command --help`
 
 There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if you like. They'll let you type `sd cat foo bar` instead of `sd foo bar --cat` or `sd new foo -- echo hi` instead of `sd foo --new echo hi` (and so on for each of the built-in commands).
 
-These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to.
+These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to. Note that they will not work if you've installed `sd` as a shell function instead of an executable.
 
 # Why does completion only work in `zsh`
 

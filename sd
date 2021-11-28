@@ -1,41 +1,38 @@
 #!/usr/bin/env bash
 
-sd_join_path() {
+__sd_join_path() {
   echo "$@" | tr ' ' /
 }
 
-sd_which() {
-  sd_join_path "$@"
+__sd_which() {
+  __sd_join_path "$@"
 }
 
-sd_cat() {
+__sd_cat() {
   ${SD_CAT:-cat} "$1"
 }
 
-sd_edit() {
+__sd_edit() {
   ${SD_EDITOR:-${VISUAL:-${EDITOR:-vi}}} "$1"
 }
 
-sd_directory_help() {
+__sd_directory_help() {
   local target="$1"
+  local file helpfile help command no_commands
   if [[ -e "$target.help" ]]; then
-    sd_cat "$target.help"
+    __sd_cat "$target.help"
     echo
   else
     command=$(basename "$target")
     echo "$command commands"
     echo
   fi
-  local no_commands=true
-  local file
-  # this loop is incredibly slow. on zsh
-  # we do a glob instead of a find, and
+  no_commands=true
+  # this loop is incredibly slow. on zsh we can do a glob instead of a find, and
   # it's noticeably faster.
   for file in $(find "$target" -not -name '.*' -maxdepth 1 -mindepth 1 -exec test -x {} \; -print); do
-    local command
     command=$(basename "$file")
-    local helpfile="$file.help"
-    local help
+    helpfile="$file.help"
     if [[ -f "$helpfile" ]]; then
       help=$(head -n1 "$helpfile")
     elif [[ -d "$file" ]]; then
@@ -58,14 +55,14 @@ sd_directory_help() {
   fi
 }
 
-sd_help() {
+__sd_help() {
   local target=$1
 
   if [[ -d "$target" ]]; then
     # sd will print subcommands when given a directory
-    sd_directory_help "$target"
+    __sd_directory_help "$target"
   elif [[ -f "$target.help" ]]; then
-    sd_cat "$target.help"
+    __sd_cat "$target.help"
   else
     help=$(sed -nE -e '/^#!/d' -e $':start\n /^#/{ s/^# ?//; p; \nb start\n }' "$target")
     if [[ -z "$help" ]]; then
@@ -77,7 +74,7 @@ sd_help() {
   fi
 }
 
-sd_new() {
+__sd_new() {
   local target="$1"
   shift
 
@@ -105,7 +102,7 @@ sd_new() {
     body=$(printf "\n%s" "$body")
   fi
 
-  script="$target"/"$(sd_join_path "${command_path[@]}")"
+  script="$target"/"$(__sd_join_path "${command_path[@]}")"
 
   if [[ -e "$script" ]]; then
     echo "$script already exists!" >&2
@@ -123,11 +120,13 @@ EOF
   chmod +x "$script"
 
   if [[ -z "$body" ]]; then
-    sd_edit "${command_path[@]}"
+    __sd_edit "${command_path[@]}"
   fi
 }
 
-sd() {
+sd() (
+  set -euo pipefail
+
   local target=${SD_ROOT:-$HOME/sd}
 
   while [[ $# -gt 0 ]]; do
@@ -161,37 +160,49 @@ sd() {
   done
 
   if [[ "$found_help" = "true" ]]; then
-    sd_help "$target"
+    __sd_help "$target"
     exit 0
   elif [[ "$found_new" = "true" ]]; then
-    sd_new "$target" "$@"
+    __sd_new "$target" "$@"
     exit 0
   elif [[ "$found_edit" = "true" ]]; then
-    sd_edit "$target" "$@"
+    __sd_edit "$target" "$@"
     exit 0
   elif [[ "$found_cat" = "true" ]]; then
-    sd_cat "$target"
+    __sd_cat "$target"
     exit 0
   elif [[ "$found_which" = "true" ]]; then
-    sd_which "$target"
+    __sd_which "$target"
     exit 0
   fi
 
   if [[ -d "$target" ]]; then
-    sd_directory_help "$target"
+    __sd_directory_help "$target"
     if [[ $# -gt 0 ]]; then
       echo >&2
-      echo "$target/$(sd_join_path "$@") not found" >&2
+      echo "$target/$(__sd_join_path "$@") not found" >&2
       exit 1
     fi
   elif [[ -x "$target" ]]; then
     "$target" "$@"
   else
-    sd_cat "$@"
+    __sd_cat "$@"
   fi
-}
+)
 
-if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
-  set -euo pipefail
-  sd "$@"
+# If you source this file, it will define the function sd,
+# which you can use from your shell. If you *run* this file
+# as an executable, it will just invoke that function. We
+# have to do some tricks to detect that reliably on bash/zsh.
+
+if [[ -n ${ZSH_EVAL_CONTEXT+x} ]]; then
+  # we are in zsh
+  if [[ "$ZSH_EVAL_CONTEXT" = toplevel ]]; then
+    sd "$@"
+  fi
+elif [[ -n ${BASH_SOURCE[0]+x} ]]; then
+  # we are in bash
+  if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+    sd "$@"
+  fi
 fi
