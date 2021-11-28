@@ -30,7 +30,7 @@ __sd_directory_help() {
   no_commands=true
   # this loop is incredibly slow. on zsh we can do a glob instead of a find, and
   # it's noticeably faster.
-  for file in $(find "$target" -not -name '.*' -maxdepth 1 -mindepth 1 -exec test -x {} \; -print); do
+  for file in $(find "$target" -maxdepth 1 -mindepth 1 -not -name '.*' -exec test -x {} \; -print); do
     command=$(basename "$file")
     helpfile="$file.help"
     if [[ -f "$helpfile" ]]; then
