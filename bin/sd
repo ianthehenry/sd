@@ -81,11 +81,6 @@ sd_new() {
   local target="$1"
   shift
 
-  if [[ -f "$target" ]]; then
-    echo "error: command prefix $target is a regular file" >&2
-    exit 1
-  fi
-
   local -a command_path=()
 
   for arg in "$@"; do
@@ -97,6 +92,11 @@ sd_new() {
 
   if [[ ${#command_path[@]} -eq 0 ]]; then
     echo "error: $target already exists" >&2
+    exit 1
+  fi
+
+  if [[ -f "$target" ]]; then
+    echo "error: command prefix $target is a regular file" >&2
     exit 1
   fi
 
