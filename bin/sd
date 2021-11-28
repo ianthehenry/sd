@@ -1,59 +1,197 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+sd_join_path() {
+  echo "$@" | tr ' ' /
+}
 
-dir=${SD_ROOT:-"$HOME/sd"}
+sd_which() {
+  sd_join_path "$@"
+}
 
-while [[ $# > 0 ]]; do
-  command="$1"
-  shift
-  if [[ -d "$dir/$command" ]]; then
-    dir="$dir/$command"
-  elif [[ -f "$dir/$command" ]]; then
-    if [[ -x "$dir/$command" ]]; then
-      "$dir/$command" "$@"
-      exit 0
-    else
-      # For now, this is my very low-tech help system...
-      cat "$dir/$command"
-      exit 0
-    fi
+sd_cat() {
+  ${SD_CAT:-cat} "$1"
+}
+
+sd_edit() {
+  ${SD_EDITOR:-${VISUAL:-${EDITOR:-vi}}} "$1"
+}
+
+sd_directory_help() {
+  local target="$1"
+  if [[ -e "$target.help" ]]; then
+    sd_cat "$target.help"
+    echo
   else
-    echo "file not found!" >&2
-    echo "$dir/$command" >&2
+    command=$(basename "$target")
+    echo "$command commands"
+    echo
+  fi
+  local no_commands=true
+  local file
+  # this loop is incredibly slow. on zsh
+  # we do a glob instead of a find, and
+  # it's noticeably faster.
+  for file in $(find "$target" -not -name '.*' -maxdepth 1 -mindepth 1 -exec test -x {} \; -print); do
+    local command
+    command=$(basename "$file")
+    local helpfile="$file.help"
+    local help
+    if [[ -f "$helpfile" ]]; then
+      help=$(head -n1 "$helpfile")
+    elif [[ -d "$file" ]]; then
+      help="$command commands"
+    else
+      help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+    fi
+    # this should really be a two-pass thing to calculate
+    # the longest filename instead of hardcoding the spacing...
+    # but oh well whatever
+    if [[ -d "$file" ]]; then
+      command="$command ..."
+    fi
+    printf '%-10s -- %s\n' "$command" "$help"
+    no_commands=false
+  done
+
+  if [[ "$no_commands" = true ]]; then
+    echo "(no subcommands found)"
+  fi
+}
+
+sd_help() {
+  local target=$1
+
+  if [[ -d "$target" ]]; then
+    # sd will print subcommands when given a directory
+    sd_directory_help "$target"
+  elif [[ -f "$target.help" ]]; then
+    sd_cat "$target.help"
+  else
+    help=$(sed -nE -e '/^#!/d' -e $':start\n /^#/{ s/^# ?//; p; \nb start\n }' "$target")
+    if [[ -z "$help" ]]; then
+      echo "there is no help for you here" >&2
+      exit 1
+    else
+      echo "$help"
+    fi
+  fi
+}
+
+sd_new() {
+  local target="$1"
+  shift
+
+  if [[ -f "$target" ]]; then
+    echo "error: command prefix $target is a regular file" >&2
     exit 1
   fi
-done
 
-if [[ -e "$dir.help" ]]; then
-  cat "$dir.help"
-  echo
-else
-  command=$(basename "$dir")
-  echo "$command commands"
-  echo
-fi
-no_commands=1
-for file in $(find "$dir" -maxdepth 1 -mindepth 1 -exec test -x {} \; -print); do
-  command=$(basename "$file")
-  helpfile="$file.help"
-  if [[ -f "$helpfile" ]]; then
-    help=$(head -n1 "$helpfile")
-  elif [[ -d "$file" ]]; then
-    help="$command commands"
+  local -a command_path=()
+
+  for arg in "$@"; do
+    case "$arg" in
+      --new) shift; break ;;
+      *) command_path+=("$arg"); shift ;;
+    esac
+  done
+
+  if [[ ${#command_path[@]} -eq 0 ]]; then
+    echo "error: $target already exists" >&2
+    exit 1
+  fi
+
+  body="$*"
+  if [[ -n "$body" ]]; then
+    body=$(printf "\n%s" "$body")
+  fi
+
+  script="$target"/"$(sd_join_path "${command_path[@]}")"
+
+  if [[ -e "$script" ]]; then
+    echo "$script already exists!" >&2
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "$script")"
+  cat > "$script" <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+$body
+EOF
+
+  chmod +x "$script"
+
+  if [[ -z "$body" ]]; then
+    sd_edit "${command_path[@]}"
+  fi
+}
+
+sd() {
+  local target=${SD_ROOT:-$HOME/sd}
+
+  while [[ $# -gt 0 ]]; do
+    local arg="$1"
+    if [[ -d "$target/$arg" ]]; then
+      target="$target/$arg"
+      shift
+    elif [[ -f "$target/$arg" ]]; then
+      target="$target/$arg"
+      shift
+      break
+    else
+      break
+    fi
+  done
+
+  local found_help="false"
+  local found_new="false"
+  local found_edit="false"
+  local found_cat="false"
+  local found_which="false"
+
+  for arg in "$@"; do
+    case "$arg" in
+      --help) found_help=true ;;
+      --new) found_new=true ;;
+      --edit) found_edit=true ;;
+      --cat) found_cat=true ;;
+      --which) found_which=true ;;
+    esac
+  done
+
+  if [[ "$found_help" = "true" ]]; then
+    sd_help "$target"
+    exit 0
+  elif [[ "$found_new" = "true" ]]; then
+    sd_new "$target" "$@"
+    exit 0
+  elif [[ "$found_edit" = "true" ]]; then
+    sd_edit "$target" "$@"
+    exit 0
+  elif [[ "$found_cat" = "true" ]]; then
+    sd_cat "$target"
+    exit 0
+  elif [[ "$found_which" = "true" ]]; then
+    sd_which "$target"
+    exit 0
+  fi
+
+  if [[ -d "$target" ]]; then
+    sd_directory_help "$target"
+    if [[ $# -gt 0 ]]; then
+      echo >&2
+      echo "$target/$(sd_join_path "$@") not found" >&2
+      exit 1
+    fi
+  elif [[ -x "$target" ]]; then
+    "$target" "$@"
   else
-    help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+    sd_cat "$@"
   fi
-  # this should really be a two-pass thing to calculate
-  # the longest filename instead of hardcoding the spacing...
-  # but oh well whatever
-  if [[ -d "$file" ]]; then
-    command="$command ..."
-  fi
-  printf '%-10s -- %s\n' "$command" "$help"
-  no_commands=0
-done
+}
 
-if [[ "$no_commands" -eq 1 ]]; then
-  echo "(no subcommands found)"
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  set -euo pipefail
+  sd "$@"
 fi

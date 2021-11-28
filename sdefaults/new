@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# create a new script and open it for editing
+
 set -euo pipefail
 
 command=()
@@ -11,28 +13,4 @@ for arg in "$@"; do
   esac
 done
 
-body="$@"
-if [[ ! -z "$body" ]]; then
-  body=$(printf "\n%s" "$body")
-fi
-
-script=$(sd which "${command[@]}")
-
-if [[ -e "$script" ]]; then
-  echo "$script already exists!" >&2
-  exit 1
-fi
-
-mkdir -p "$(dirname "$script")"
-cat > "$script" <<EOF
-#!/usr/bin/env bash
-
-set -euo pipefail
-$body
-EOF
-
-chmod +x "$script"
-
-if [[ -z "$body" ]]; then
-  sd edit "${command[@]}"
-fi
+sd "${command[@]}" --new "$@"

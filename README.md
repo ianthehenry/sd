@@ -1,10 +1,118 @@
 # `sd`: my script directory
 
-I haven't written a real readme yet. I probably will, eventually. In the meantime, [this blog post explains the project pretty well][post].
+It's like a hierarchical `~/bin`, but with fancy autocomplete. [See this blog post for an introduction and demo][post].
+
+# Usage
+
+The default behavior for `sd foo bar` is:
+
+- If `~/sd/foo` is an executable file, execute `~/sd/foo bar`.
+- If `~/sd/foo/bar` is an executable file, invoke it with no arguments.
+- If `~/sd/foo/bar` is a directory, this is the same is `sd foo bar --help`.
+- If `~/sd/foo/bar` is a non-executable regular file, this is the same is `sd foo bar --cat`.
+
+But there are some special flags that are significant to `sd`. If you supply any one of these flags, `sd` will not invoke your script, and will do something fancier instead.
+
+    $ sd foo bar --help
+    $ sd foo bar --new
+    $ sd foo bar --edit
+    $ sd foo bar --cat
+    $ sd foo bar --which
+
+## `--help`
+
+If there's a corresponding `.help` file, print that file. For example, `sd foo --help` would try to print `~/sd/foo.help`.
+
+If there is no `.help` file for the command, `sd` will print the first comment block in the file instead. `sd` currently only recognizes bash-style `#` comments.
+
+For example:
+
+    $ cat ~/sd/nix/sync
+
+```bash
+#!/usr/bin/env bash
+
+# make user environment match ~/dotfiles/user.nix
+#
+# This will remove any packages you've installed with nix-env
+# but have not added to user.nix. To see exactly what this
+# will do, run:
+#
+#     sd nix diff
+
+set -euo pipefail
+
+# maybe this should be configurable
+nix-env -irf ~/dotfiles/user.nix
+```
+
+    $ sd nix sync --help
+    make user environment match ~/dotfiles/user.nix
+
+    This will remove any packages you've installed with nix-env
+    but have not added to user.nix. To see exactly what this
+    will do, run:
+
+        sd nix diff
+
+If `--help` is run with a directory, it prints a command listing instead:
+
+    $ sd nix
+    nix commands
+
+    install    -- <package> use --latest to install from nixpkgs-unstable
+    shell      -- add gcroots for shell.nix
+    diff       -- prints what will happen if you run sync
+    info       -- <package> prints package description
+    sync       -- make user environment match ~/dotfiles/user.nix
+
+## `--new`
+
+Everything to the left of `--new` is considered a command path, and everything to the right of `--new` is considered the command body. For example:
+
+    sd foo bar --new echo hi
+
+Will try to create a new command at `~/sd/foo/bar` with an initial contents of `echo hi`.
+
+Actually, to be more precise, it will create this script:
+
+    $ cat ~/sd/foo/bar
+
+```bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo hi
+```
+
+There is currently no way to customize this template.
+
+If no body is supplied after `--new`, `sd` will open the script for editing.
+
+## `--cat`
+
+Prints the contents of the script. See `SD_CAT` below.
+
+# `--edit`
+
+Open the script in an editor. See `SD_EDITOR` below.
+
+# `--which`
+
+Prints the path of the script.
+
+# Options
+
+`sd` respects some environment variables:
+
+- `SD_ROOT`: location of the script directory. Defaults to `$HOME/sd`.
+- `SD_EDITOR`: used by `sd foo --edit` and `sd foo --new`. Defaults to `$VISUAL`, then `$EDITOR`, then finally falls back to `vi` if neither of those are set.
+- `SD_CAT`: program used when printing files, in case you want to use something like [`bat`](https://github.com/sharkdp/bat). Defaults to `cat`.
 
 # Installation
 
-So this isn't, like, distributed anywhere reasonable. Like, it's not... packaged in any package manager that I am aware of. So...
+`sd` isn't packaged anywhere I'm aware of, so you'll have to install it the old-fashioned way:
 
 - Put `bin/sd` somewhere on your path.
 
@@ -22,20 +130,13 @@ fpath=(~/src/sd/completions $fpath)
 
 To your `~/.zshrc` file.
 
-- Set up your initial `~/sd`
+# `sd help command` vs. `sd command --help`
 
-This will not be necessary once I rewrite `sd` as something other than a janky bash script, but it is necessary right now: you need to copy all of the files in the `sdefaults/` directory into your own `~/sd`. Or you can set up symlinks:
+There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if you like. They'll let you type `sd cat foo bar` instead of `sd foo bar --cat` or `sd new foo -- echo hi` instead of `sd foo --new echo hi` (and so on for each of the built-in commands).
 
-```shell
-mkdir -p "$HOME/sd"
-for file in "$HOME"/src/sd/sdefaults/*; do
-  if [[ ! -s "$HOME/sd/$(basename "$file")" ]]; then
-    ln -s "$file" "$HOME/sd/$(basename "$file")"
-  fi
-done
-```
+These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to.
 
-# Why does this only work in `zsh`
+# Why does completion only work in `zsh`
 
 Just because I'm lazy. `bash` completion support is forthcoming. One day...
 
