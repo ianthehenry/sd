@@ -7,11 +7,11 @@ It's like a hierarchical `~/bin`, but with fancy autocomplete. [See this blog po
 The default behavior for `sd foo bar` is:
 
 - If `~/sd/foo` is an executable file, execute `~/sd/foo bar`.
-- If `~/sd/foo/bar` is an executable file, invoke it with no arguments.
-- If `~/sd/foo/bar` is a directory, this is the same is `sd foo bar --help`.
-- If `~/sd/foo/bar` is a non-executable regular file, this is the same is `sd foo bar --cat`.
+- If `~/sd/foo/bar` is an executable file, execute it with no arguments.
+- If `~/sd/foo/bar` is a directory, this is the same is `sd foo bar --help` (see below).
+- If `~/sd/foo/bar` is a non-executable regular file, this is the same is `sd foo bar --cat` (see below).
 
-But there are some special flags that are significant to `sd`. If you supply any one of these flags, `sd` will not invoke your script, and will do something fancier instead.
+There are some special flags that are significant to `sd`. If you supply any one of these arguments, `sd` will not invoke your script, and will do something fancier instead.
 
     $ sd foo bar --help
     $ sd foo bar --new
@@ -19,33 +19,6 @@ But there are some special flags that are significant to `sd`. If you supply any
     $ sd foo bar --cat
     $ sd foo bar --which
     $ sd foo bar --really
-
-## `--really`
-
-Suppress special handling of any of the other special flags. Allows you to pass `--help` as an argument to your actual script, instead of being interpreted by `sd`.
-
-    $ sd foo bar --help --really
-
-Will invoke:
-
-    ~/sd/foo/bar --help
-
-The first occurrence of the `--really` argument will be removed from the arguments passed to the script, so if you need to pass a literal `--really`, you must pass it twice to `sd`. For example:
-
-    $ sd foo bar --really --help --really
-
-Will invoke:
-
-    $ ~/sd/foo/bar --help --really
-
-And:
-
-
-    $ sd foo bar --really --really --help
-
-Will invoke:
-
-    $ ~/sd/foo/bar --really --help
 
 ## `--help`
 
@@ -136,6 +109,24 @@ Open the script in an editor. See `SD_EDITOR` below.
 
 Prints the path of the script.
 
+## `--really`
+
+Suppress special handling of all of the other special flags. This allows you to pass `--help` or `--new` as arguments to your actual script, instead of being interpreted by `sd`. For example:
+
+    $ sd foo bar --help --really
+
+Will invoke:
+
+    ~/sd/foo/bar --help
+
+The first occurrence of the `--really` argument will be removed from the arguments passed to the script, so if you need to pass a literal `--really`, you must pass it twice to `sd`. For example:
+
+    $ sd foo bar --help --really --really
+
+Will invoke:
+
+    $ ~/sd/foo/bar --help --really
+
 # Options
 
 `sd` respects some environment variables:
@@ -193,7 +184,6 @@ If you've cloned this repo to `~/src/sd`, add something like this to your `~/.zs
 
 ```shell
 fpath=(~/src/sd $fpath)
-export fpath
 ```
 
 ## `sd help command` vs. `sd command --help`
