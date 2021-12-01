@@ -18,6 +18,34 @@ But there are some special flags that are significant to `sd`. If you supply any
     $ sd foo bar --edit
     $ sd foo bar --cat
     $ sd foo bar --which
+    $ sd foo bar --really
+
+## `--really`
+
+Suppress special handling of any of the other special flags. Allows you to pass `--help` as an argument to your actual script, instead of being interpreted by `sd`.
+
+    $ sd foo bar --help --really
+
+Will invoke:
+
+    ~/sd/foo/bar --help
+
+The first occurrence of the `--really` argument will be removed from the arguments passed to the script, so if you need to pass a literal `--really`, you must pass it twice to `sd`. For example:
+
+    $ sd foo bar --really --help --really
+
+Will invoke:
+
+    $ ~/sd/foo/bar --help --really
+
+And:
+
+
+    $ sd foo bar --really --really --help
+
+Will invoke:
+
+    $ ~/sd/foo/bar --really --help
 
 ## `--help`
 
@@ -185,6 +213,9 @@ Just because I'm lazy. `bash` completion support is forthcoming. One day...
 There are no *releases* of `sd`, per se, but I have occasionally made changes.
 
 ## 2021-11-30
+
+- added `--really`
+- `dir.help` files are now `dir/help` files
 
 You used to be able to provide a description for a directory called `foo/` by writing a file called `foo.help` as a sibling of that directory.
 

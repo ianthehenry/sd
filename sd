@@ -5,7 +5,7 @@ __sd_join_path() {
 }
 
 __sd_which() {
-  __sd_join_path "$@"
+  echo "$1"
 }
 
 __sd_cat() {
@@ -67,16 +67,17 @@ __sd_directory_help() {
     helps+=("$help")
   done
 
-  if [[ "${#commands[@]}" -eq 0 ]]; then
+  if [[ ${#commands[@]} -eq 0 ]]; then
     echo "(no subcommands found)"
   else
     local max_length=0
     local length
     for command in "${commands[@]}"; do
-      length="${#command}"
-      max_length=$(( length > max_length ? length : max_length))
+      length=${#command}
+      max_length=$((length > max_length ? length : max_length))
     done
 
+    # zsh doesn't support ${!commands[@]} expansion
     for ((i = 0; i < ${#commands[@]}; i++)); do
       printf "%-${max_length}s -- %s\n" "${commands[i]}" "${helps[i]}"
     done
@@ -182,6 +183,7 @@ sd() (
   local found_edit="false"
   local found_cat="false"
   local found_which="false"
+  local found_really="false"
 
   for arg in "$@"; do
     case "$arg" in
@@ -190,10 +192,22 @@ sd() (
       --edit) found_edit=true ;;
       --cat) found_cat=true ;;
       --which) found_which=true ;;
+      --really) found_really=true ;;
     esac
   done
 
-  if [[ "$found_help" = "true" ]]; then
+  if [[ "$found_really" = "true" ]]; then
+    local -a preserved=()
+    for arg in "$@"; do
+      case "$arg" in
+        '--really') shift; break ;;
+        *) preserved+=("$arg"); shift ;;
+      esac
+    done
+    if [[ ${#preserved[@]} -gt 0 ]]; then
+      set -- "${preserved[@]}" "$@"
+    fi
+  elif [[ "$found_help" = "true" ]]; then
     __sd_help "$target"
     exit 0
   elif [[ "$found_new" = "true" ]]; then
