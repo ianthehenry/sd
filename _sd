@@ -2,7 +2,7 @@
 
 function __list_commands {
   local -a subcmds
-  local line dir next
+  local line dir next help helpfile command
   dir="$1"
   # the parens after the glob contains "glob qualifiers" (see man zshexpn):
   # * executable
@@ -11,14 +11,23 @@ function __list_commands {
   # / directories
   for file in "$dir"/*(-*,/); do
     command=$(basename "$file")
-    helpfile="$file.help"
-    if [[ -f "$helpfile" ]]; then
-      help=$(head -n1 "$helpfile")
-    elif [[ -d "$file" ]]; then
-      help="$command commands"
+
+    if [[ -d "$file" ]]; then
+      helpfile="$file/help"
+      if [[ -f "$helpfile" ]]; then
+        help=$(head -n1 "$helpfile")
+      else
+        help="$command commands"
+      fi
     else
-      help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+      helpfile="$file.help"
+      if [[ -f "$helpfile" ]]; then
+        help=$(head -n1 "$helpfile")
+      else
+        help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+      fi
     fi
+
     subcmds=($subcmds "$command:\"$help\"")
   done
 

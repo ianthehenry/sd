@@ -179,3 +179,15 @@ These mostly exist for backwards compatibility with an earlier version of `sd`. 
 Just because I'm lazy. `bash` completion support is forthcoming. One day...
 
 [post]: https://ianthehenry.com/posts/sd-my-script-directory/
+
+# Changelog
+
+There are no *releases* of `sd`, per se, but I have occasionally made changes.
+
+## 2021-11-30
+
+You used to be able to provide a description for a directory called `foo/` by writing a file called `foo.help` as a sibling of that directory.
+
+Now directory help summaries are expected in `foo/help` instead.
+
+This has the sort-of nice effect that `sd foo help` is the same as `sd foo --help`.
