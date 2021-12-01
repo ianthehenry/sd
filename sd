@@ -18,7 +18,8 @@ __sd_edit() {
 
 __sd_directory_help() {
   local target="$1"
-  local file helpfile help command no_commands
+  local i file helpfile help command
+  local -a commands helps
   if [[ -e "$target.help" ]]; then
     __sd_cat "$target.help"
     echo
@@ -27,31 +28,39 @@ __sd_directory_help() {
     echo "$command commands"
     echo
   fi
-  no_commands=true
-  # this loop is incredibly slow. on zsh we can do a glob instead of a find, and
-  # it's noticeably faster.
-  for file in $(find "$target" -maxdepth 1 -mindepth 1 -not -name '.*' -exec test -x {} \; -print); do
+  commands=()
+  helps=()
+  for file in "$target"/*; do
+    if [[ ! -x "$file" ]]; then
+      continue
+    fi
     command=$(basename "$file")
     helpfile="$file.help"
     if [[ -f "$helpfile" ]]; then
       help=$(head -n1 "$helpfile")
     elif [[ -d "$file" ]]; then
       help="$command commands"
+      command="$command ..."
     else
       help=$(sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
     fi
-    # this should really be a two-pass thing to calculate
-    # the longest filename instead of hardcoding the spacing...
-    # but oh well whatever
-    if [[ -d "$file" ]]; then
-      command="$command ..."
-    fi
-    printf '%-10s -- %s\n' "$command" "$help"
-    no_commands=false
+    commands+=("$command")
+    helps+=("$help")
   done
 
-  if [[ "$no_commands" = true ]]; then
+  if [[ "${#commands[@]}" -eq 0 ]]; then
     echo "(no subcommands found)"
+  else
+    local max_length=0
+    local length
+    for command in "${commands[@]}"; do
+      length="${#command}"
+      max_length=$(( length > max_length ? length : max_length))
+    done
+
+    for ((i = 0; i < ${#commands[@]}; i++)); do
+      printf "%-${max_length}s -- %s\n" "${commands[i]}" "${helps[i]}"
+    done
   fi
 }
 
@@ -126,6 +135,12 @@ EOF
 
 sd() (
   set -euo pipefail
+
+  if [[ -n ${ZSH_EVAL_CONTEXT+x} ]]; then
+    # we need 0-indexed arrays so that the for loop
+    # in __sd_directory_help works properly
+    set -o KSH_ARRAYS
+  fi
 
   local target=${SD_ROOT:-$HOME/sd}
   local arg
