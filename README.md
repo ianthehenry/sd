@@ -1,6 +1,42 @@
-# `sd`: my script directory
+# `sd`: my `s`cript `d`irectory
 
-It's like a hierarchical `~/bin`, but with fancy autocomplete. [See this blog post for an introduction and demo][post].
+Has this ever happened to you?
+
+*Black and white video plays of someone struggling to find a shell script they wrote a year ago and stuffed into their `~/bin` without giving it a very meaningful name.*
+
+Don't you hate it when you can't find the scripts you need, when you need it? Well now there's a better way!
+
+*Color fills the screen. Someone holds `sd` up to the camera, and flashes a winning smile. They've found the script on their first try.*
+
+Introducing `sd`, the script directory for the refined, sophisticated professional. Simply organize your scripts in a logical directory hierarchy, and let `sd` take care of the rest!
+
+    $ tree ~/sd
+    /Users/ian/sd
+    ├── blog
+    │   ├── edit
+    │   ├── preview
+    │   └── publish
+    ├── nix
+    │   ├── diff
+    │   ├── info
+    │   └── sync
+    └── tmux
+        └── init
+
+And now instead of typing `~/sd/blog/publish`, you can just type `sd blog publish` -- a savings of nearly three whole characters!
+
+But wait! There's more! You'll wonder how you ever lived without `sd`'s best-in-class tab completion:
+
+    $ sd nix <TAB>
+    diff  -- prints what will happen if you run sync
+    info  -- <package> prints package description
+    sync  -- make user environment match ~/dotfiles/user.nix
+
+Simply write a one-line comment in your script, and you'll never be left scratching your head over how you were supposed to call it!
+
+# uhh
+
+Hi okay sorry. [Take a look at this blog post for a real introduction and a fancy asciinema demo of how it works.](https://ianthehenry.com/posts/sd-my-script-directory/)
 
 # Usage
 
@@ -192,11 +228,9 @@ There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if
 
 These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to. Note that they will not work if you've installed `sd` as a shell function instead of an executable.
 
-# Why does completion only work in `zsh`
+# bash support
 
-Just because I'm lazy. `bash` completion support is forthcoming. One day...
-
-[post]: https://ianthehenry.com/posts/sd-my-script-directory/
+Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, so I didn't bother to write bash completion. If you're using bash: I'm very sorry. You *can* still use `sd`, it just... won't be quite as useful.
 
 # Changelog
 
