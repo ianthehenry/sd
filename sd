@@ -148,7 +148,7 @@ EOF
   chmod +x "$script"
 
   if [[ -z "$body" ]]; then
-    __sd_edit "${command_path[@]}"
+    __sd_edit "$script"
   fi
 }
 
@@ -214,7 +214,7 @@ sd() (
     __sd_new "$target" "$@"
     exit 0
   elif [[ "$found_edit" = "true" ]]; then
-    __sd_edit "$target" "$@"
+    __sd_edit "$target"
     exit 0
   elif [[ "$found_cat" = "true" ]]; then
     __sd_cat "$target"
