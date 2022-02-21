@@ -44,8 +44,8 @@ The default behavior for `sd foo bar` is:
 
 - If `~/sd/foo` is an executable file, execute `~/sd/foo bar`.
 - If `~/sd/foo/bar` is an executable file, execute it with no arguments.
-- If `~/sd/foo/bar` is a directory, this is the same is `sd foo bar --help` (see below).
-- If `~/sd/foo/bar` is a non-executable regular file, this is the same is `sd foo bar --cat` (see below).
+- If `~/sd/foo/bar` is a directory, this is the same is `sd foo bar --help` (it prints usage information).
+- If `~/sd/foo/bar` is a non-executable regular file, this is the same is `sd foo bar --cat` (it just prints the file out).
 
 There are some special flags that are significant to `sd`. If you supply any one of these arguments, `sd` will not invoke your script, and will do something fancier instead.
 
@@ -58,9 +58,13 @@ There are some special flags that are significant to `sd`. If you supply any one
 
 ## `--help`
 
-If there's a corresponding `.help` file, print that file. For example, `sd foo --help` would try to print `~/sd/foo.help`.
+Print the contents of a help file, or generate a help file from comments in a script.
 
-If there is no `.help` file for the command, `sd` will print the first comment block in the file instead. `sd` currently only recognizes bash-style `#` comments.
+For executables, `sd` looks for a file with the same name but the `.help` extension. For example, `sd nix diff --help` would look for a file called `~/sd/nix/diff.help`, and print it out.
+
+For directories, `sd` looks for a file that's just called `help`. So `sd nix --help` would look for `~/sd/nix/help`.
+
+If there is no help file for an executable, `sd` will print the first comment block in the file instead. `sd` currently only recognizes bash-style `#` comments.
 
 For example:
 
@@ -96,7 +100,7 @@ will do, run:
     sd nix diff
 ```
 
-If you run `--help` for a directory, it prints a command listing instead:
+If you run `--help` for a directory, it will also print out a command listing after the help text:
 
 ```
 $ sd nix --help
@@ -186,7 +190,7 @@ Note that you cannot invoke "recursive `sd`" (that is, write scripts that themse
 
 You can just source `sd` in your `.zshrc` and set up completion manually (as described below), but `sd` is designed to be compatible with shell plugin managers.
 
-### [Antigen](https://github.com/zsh-users/antigen) (`zsh`)
+### [Antigen](https://github.com/zsh-users/antigen)
 
 Add this line to your `.zshrc`:
 
@@ -194,15 +198,20 @@ Add this line to your `.zshrc`:
 antigen bundle ianthehenry/sd
 ```
 
-Then you can update `sd` by running:
+### [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh):
+
+Clone this repo into your custom plugins directory:
 
 ```
-$ antigen update
+$ git clone https://github.com/ianthehenry/sd.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/sd
 ```
 
-### Other plugin managers
+And then add it to the plugins list in your `~/.zshrc` before you source `oh-my-zsh`:
 
-You can *probably* install `sd` with other plugin managers as well, but I haven't tested any.
+```
+plugins+=(sd)
+source "$ZSH/oh-my-zsh.sh"
+```
 
 ## Installation as a regular script
 
@@ -245,4 +254,4 @@ You used to be able to provide a description for a directory called `foo/` by wr
 
 Now directory help summaries are expected in `foo/help` instead.
 
-This has the sort-of nice effect that `sd foo help` is the same as `sd foo --help`.
+This has the sort-of nice effect that `sd foo help` is sometimes similar to `sd foo --help`. Except that the latter also prints out subcommands.
