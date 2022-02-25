@@ -102,8 +102,25 @@ __sd_help() {
   fi
 }
 
+__sd_print_template() {
+  if [[ -f "$1/template" ]]; then
+    cat "$1/template"
+  else
+    if [[ "$1" = "${SD_ROOT:-$HOME/sd}" ]]; then
+      cat <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+EOF
+    else
+      __sd_print_template "$(dirname "$1")"
+    fi
+  fi
+}
+
 __sd_new() {
-  local target="$1"
+  local script dir target body
+  target="$1"
   shift
 
   local -a command_path=()
@@ -126,9 +143,6 @@ __sd_new() {
   fi
 
   body="$*"
-  if [[ -n "$body" ]]; then
-    body=$(printf "\n%s" "$body")
-  fi
 
   script="$target"/"$(__sd_join_path "${command_path[@]}")"
 
@@ -137,13 +151,14 @@ __sd_new() {
     exit 1
   fi
 
-  mkdir -p "$(dirname "$script")"
-  cat > "$script" <<EOF
-#!/usr/bin/env bash
-
-set -euo pipefail
-$body
-EOF
+  dir="$(dirname "$script")"
+  mkdir -p "$dir"
+  (
+    __sd_print_template "$dir"
+    if [[ -n "$body" ]]; then
+      printf "\n%s\n" "$body"
+    fi
+  ) >"$script"
 
   chmod +x "$script"
 

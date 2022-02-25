@@ -117,7 +117,7 @@ sync       -- make user environment match ~/dotfiles/user.nix
 
 Everything to the left of `--new` is considered a command path, and everything to the right of `--new` is considered the command body. For example:
 
-    sd foo bar --new echo hi
+    $ sd foo bar --new echo hi
 
 Will try to create a new command at `~/sd/foo/bar` with an initial contents of `echo hi`.
 
@@ -133,9 +133,25 @@ set -euo pipefail
 echo hi
 ```
 
-There is currently no way to customize this template.
+Assuming the default template.
 
 If no body is supplied after `--new`, `sd` will open the script for editing.
+
+### custom script templates
+
+You can customize the template used by `--new` by creating a file called `template`, either in `~/sd` or one of its subdirectories.
+
+`sd` will try to find a template by walking recursively up the directory hierarchy. For example, if you run:
+
+```
+$ sd foo bar baz --new
+```
+
+`sd` will try to find a template at `~/sd/foo/bar/template` first, then fall back to `~/sd/foo/template`, then `~/sd/template`. If it doesn't find any template file, it will use the default bash template shown above.
+
+(There is no need to make your `template` executable -- `sd` will take care of that for you.)
+
+When `--new` is used to create an inline script, that script will always go at the *end* of your template file. There is currently no way to customize this.
 
 ## `--cat`
 
@@ -244,6 +260,10 @@ Bash doesn't support the fancy completion-with-description feature that is sort 
 # Changelog
 
 There are no *releases* of `sd`, per se, but I have occasionally made changes.
+
+## 2021-02-24
+
+- added per-directory `template` files, to override the `bash` default
 
 ## 2021-11-30
 
