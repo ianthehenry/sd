@@ -265,6 +265,10 @@ There are no *releases* of `sd`, per se, but I have occasionally made changes.
 
 - autocompletion now completes arguments to commands instead of just commands
     - only completes positional file arguments and the built-in flags (like `--help`)
+- `sd` now only forks a subshell when invoked as a function
+- `sd` now `exec`s scripts instead of `fork`+`exec`
+    - this fixes the rare issue where a long-running script could throw errors when it finished if you were editing the `sd` executable itself while the script was running, because `bash` was trying to execute the "rest" of the file and apparently doing so by byte index or something (??)
+    - this only affects me
 
 ## 2021-02-24
 
