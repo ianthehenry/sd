@@ -31,12 +31,23 @@ function __list_commands {
     subcmds=($subcmds "$command:\"$help\"")
   done
 
-  _arguments -C ": :(($subcmds))" \
-    "*::arg:->args"
+  _arguments -C ": :(($subcmds))" "*::arg:->args"
 
   next="$dir/$line[1]"
   if [[ ! -z $line[1] && -d "$next" ]]; then
     __list_commands "$next"
+  elif [[ ! -z $line[1] && -x "$next" ]]; then
+    # You could imagine wanting to customize the '*:file:_files' fallback
+    # at some point, but I'm not going to worry about that for now.
+    _arguments -A '-*' \
+      '--help[print help text]' \
+      '--cat[print script contents]' \
+      '--which[print script path]' \
+      '--edit[open script for editing]' \
+      '--really[suppress special argument handling]' \
+      '*:file:_files'
+  elif [[ ! -z $line[1] && ! -f "$next" ]]; then
+    _arguments "--new[create a new script]"
   fi
 }
 
