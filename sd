@@ -77,7 +77,14 @@ __sd_directory_help() {
       max_length=$((length > max_length ? length : max_length))
     done
 
-    # zsh doesn't support ${!commands[@]} expansion
+    if [[ -n ${ZSH_EVAL_CONTEXT+x} ]]; then
+      set -o LOCAL_OPTIONS
+      # we need to ensure we have 0-indexed arrays
+      # in order for this loop to work properly.
+      # zsh doesn't support ${!commands[@]} expansion
+      set -o KSH_ARRAYS
+    fi
+
     for ((i = 0; i < ${#commands[@]}; i++)); do
       printf "%-${max_length}s -- %s\n" "${commands[i]}" "${helps[i]}"
     done
@@ -167,14 +174,8 @@ __sd_new() {
   fi
 }
 
-sd() (
+__sd() {
   set -euo pipefail
-
-  if [[ -n ${ZSH_EVAL_CONTEXT+x} ]]; then
-    # we need 0-indexed arrays so that the for loop
-    # in __sd_directory_help works properly
-    set -o KSH_ARRAYS
-  fi
 
   local target=${SD_ROOT:-$HOME/sd}
   local arg
@@ -247,10 +248,18 @@ sd() (
       exit 1
     fi
   elif [[ -x "$target" ]]; then
-    "$target" "$@"
+    exec "$target" "$@"
   else
     __sd_cat "$@"
   fi
+}
+
+# If you source this file and use function-mode sd, we want to
+# wrap the execution in a subshell so that set -e doesn't kill
+# the interactive shell, and so that we can exec the subshell
+# without destroying the interactive shell.
+sd() (
+  __sd "$@"
 )
 
 # If you source this file, it will define the function sd,
@@ -261,11 +270,11 @@ sd() (
 if [[ -n ${ZSH_EVAL_CONTEXT+x} ]]; then
   # we are in zsh
   if [[ "$ZSH_EVAL_CONTEXT" = toplevel ]]; then
-    sd "$@"
+    __sd "$@"
   fi
 elif [[ -n ${BASH_SOURCE[0]+x} ]]; then
   # we are in bash
   if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
-    sd "$@"
+    __sd "$@"
   fi
 fi
