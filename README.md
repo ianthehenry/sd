@@ -261,6 +261,11 @@ Bash doesn't support the fancy completion-with-description feature that is sort 
 
 There are no *releases* of `sd`, per se, but I have occasionally made changes.
 
+## 2021-02-26
+
+- autocompletion now completes arguments to commands instead of just commands
+    - only completes positional file arguments and the built-in flags (like `--help`)
+
 ## 2021-02-24
 
 - added per-directory `template` files, to override the `bash` default
