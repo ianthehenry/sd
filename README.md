@@ -183,6 +183,12 @@ Will invoke:
 
     $ ~/sd/foo/bar --help --really
 
+# Context
+
+When a script is invoked, `sd` will set the environment variable `SD` to the directory that the script was found in -- in other words, `$(dirname "$0")`.
+
+This makes it slightly more convenient to refer to shared helper files or other scripts relative to the executing script.
+
 # Options
 
 `sd` respects some environment variables:
@@ -263,6 +269,7 @@ There are no *releases* of `sd`, per se, but I have occasionally made changes.
 
 ## 2021-02-26
 
+- scripts now run with the `SD` environment variable set to the directory they were found in
 - autocompletion now completes arguments to commands instead of just commands
     - only completes positional file arguments and the built-in flags (like `--help`)
 - `sd` now only forks a subshell when invoked as a function

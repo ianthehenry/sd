@@ -248,7 +248,7 @@ __sd() {
       exit 1
     fi
   elif [[ -x "$target" ]]; then
-    exec "$target" "$@"
+    SD="$(dirname "$target")" exec "$target" "$@"
   else
     __sd_cat "$@"
   fi
