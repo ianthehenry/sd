@@ -265,9 +265,11 @@ Bash doesn't support the fancy completion-with-description feature that is sort 
 
 # Changelog
 
-There are no *releases* of `sd`, per se, but I have occasionally made changes.
+## 1.0 2022-02-27
 
-## 2022-02-26
+`sd` is now released under the MIT license. There are no functional changes from the pre-1.0 releases.
+
+## 0.3 2022-02-26
 
 - scripts now run with the `SD` environment variable set to the directory they were found in
 - autocompletion now completes arguments to commands instead of just commands
@@ -277,11 +279,11 @@ There are no *releases* of `sd`, per se, but I have occasionally made changes.
     - this fixes the rare issue where a long-running script could throw errors when it finished if you were editing the `sd` executable itself while the script was running, because `bash` was trying to execute the "rest" of the file and apparently doing so by byte index or something (??)
     - this only affects me
 
-## 2022-02-24
+## 0.2 2022-02-24
 
 - added per-directory `template` files, to override the `bash` default
 
-## 2021-11-30
+## 0.1 2021-11-30
 
 - added `--really`
 - `dir.help` files are now `dir/help` files
