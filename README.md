@@ -265,6 +265,11 @@ Bash doesn't support the fancy completion-with-description feature that is sort 
 
 # Changelog
 
+## v1.0.1 2022-04-17
+
+- better error message if `~/sd` does not exist
+- better error message if `~/sd` exists but is not a directory
+
 ## v1.0.0 2022-02-27
 
 `sd` is now released under the MIT license. There are no functional changes from the pre-1.0 releases.
