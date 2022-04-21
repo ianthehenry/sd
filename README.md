@@ -208,6 +208,25 @@ I prefer to use `sd` as a regular executable, but the function approach is more 
 
 Note that you cannot invoke "recursive `sd`" (that is, write scripts that themselves invoke `sd`) if you use the function approach. This includes all of the helper scripts in `sdefaults/` (explained below).
 
+## Installation as a regular script
+
+`sd` is not currently packaged in any package manager that I am aware of, but it should be pretty easy if you want to package it for your distribution. It's just a single script and a single completion file. Until that day:
+
+1. Put the `sd` script somewhere on your `PATH`.
+2. Put `_sd` somewhere on your `fpath`.
+
+I like to symlink `sd` to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, you can do that by running something like:
+
+    $ ln -s ~/src/sd/sd ~/bin/sd
+
+There isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. If you've cloned this repo to `~/src/sd`, add `fpath=(~/src/sd $fpath)` to your your `~/.zshrc` file. Like this:
+
+    $ echo 'fpath=(~/src/sd $fpath)' >> ~/.zshrc
+
+Note that that will only take effect for *future* shells, so to start enjoying `sd` immediately, you'll also want to run this directly:
+
+    $ fpath=(~/src/sd $fpath)
+
 ## Installation as a shell function
 
 You can just source `sd` in your `.zshrc` and set up completion manually (as described below), but `sd` is designed to be compatible with shell plugin managers.
@@ -233,24 +252,6 @@ And then add it to the plugins list in your `~/.zshrc` before you source `oh-my-
 ```
 plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
-```
-
-## Installation as a regular script
-
-`sd` is not currently packaged in any package manager that I am aware of, but it should be pretty easy if you want to package it for your distribution. It's just a single script and a single completion file. Until that day:
-
-- Put the `sd` script somewhere on your path.
-
-I like to symlink it to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, run something like:
-
-    $ ln -s ~/src/sd/sd ~/bin/sd
-
-- Put `_sd` somewhere on your `fpath`.
-
-If you've cloned this repo to `~/src/sd`, add something like this to your `~/.zshrc` file:
-
-```shell
-fpath=(~/src/sd $fpath)
 ```
 
 ## `sd help command` vs. `sd command --help`
