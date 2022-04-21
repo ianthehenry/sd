@@ -1,5 +1,9 @@
 # `sd`: my `s`cript `d`irectory
 
+- [Usage](#usage)
+- [Installation](#installation)
+- [Changelog](#changelog)
+
 Has this ever happened to you?
 
 *Black and white video plays of someone struggling to find a shell script they wrote a year ago and stuffed into their `~/bin` without giving it a very meaningful name.*
