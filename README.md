@@ -217,7 +217,7 @@ Note that you cannot invoke "recursive `sd`" (that is, write scripts that themse
 `sd` is not currently packaged in any package manager that I am aware of, but it should be pretty easy if you want to package it for your distribution. It's just a single script and a single completion file. Until that day:
 
 1. Put the `sd` script somewhere on your `PATH`.
-2. Put `_sd` somewhere on your `fpath`.
+2. Put the `_sd` completion script somewhere on your `fpath`.
 
 I like to symlink `sd` to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, you can do that by running something like:
 
