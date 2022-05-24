@@ -264,9 +264,11 @@ There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if
 
 These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to. Note that they will not work if you've installed `sd` as a shell function instead of an executable.
 
-# bash support
+# bash/fish autocompletion support
 
-Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, so I didn't bother to write bash completion. If you're using bash: I'm very sorry. You *can* still use `sd`, it just... won't be quite as useful.
+Patrick Jackson contributed [an unofficial fish completion script](https://gist.github.com/patricksjackson/5065e4a9d8e825dafc7824112f17a5e6), which should be usable with some modification (as written it does not respect `SD_ROOT`, but it should act as a very good starting point if you use fish).
+
+Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, but there are apparently ways to hack something similar.
 
 # Changelog
 
