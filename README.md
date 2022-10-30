@@ -272,6 +272,10 @@ Bash doesn't support the fancy completion-with-description feature that is sort 
 
 # Changelog
 
+## v1.1.0 2022-10-30
+
+- fix a bug where `--help` would print every comment in the script
+
 ## v1.0.1 2022-04-17
 
 - better error message if `~/sd` does not exist
