@@ -99,7 +99,7 @@ __sd_help() {
   elif [[ -f "$target.help" ]]; then
     __sd_cat "$target.help"
   else
-    help=$(sed -nE -e '/^#!/d' -e $':start\n /^#/{ s/^# ?//; p; \nb start\n }' "$target")
+    help=$(sed -nE -e '/^#!/d' -e $':start\n/^#/{ s/^# ?//; p; n; /^#/!q; b start\n}' "$target")
     if [[ -z "$help" ]]; then
       echo "there is no help for you here" >&2
       exit 1
