@@ -223,13 +223,20 @@ I like to symlink `sd` to `~/bin`, which is already on my path. If you've cloned
 
     $ ln -s ~/src/sd/sd ~/bin/sd
 
-There isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. If you've cloned this repo to `~/src/sd`, add `fpath=(~/src/sd $fpath)` to your your `~/.zshrc` file. Like this:
+There isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. You should add that to your `.zshrc` file before the line where you call `compinit`. It should look something like this:
 
-    $ echo 'fpath=(~/src/sd $fpath)' >> ~/.zshrc
+    # ~/.zshrc
 
-Note that that will only take effect for *future* shells, so to start enjoying `sd` immediately, you'll also want to run this directly:
+    fpath=(~/src/sd $fpath)
+    autoload -U compinit
+    compinit
+
+If you use a zsh framework like [`oh-my-zsh`](https://github.com/ohmyzsh/ohmyzsh), it probably calls `compinit` for you. In that case, just set your `fpath` before you source the framework's initialization script.
+
+Note that changes you make to your `~/.zshrc` will only take effect for *future* shells you create, so to start enjoying `sd` immediately you'll also want to run these commands in your existing shells:
 
     $ fpath=(~/src/sd $fpath)
+    $ compinit
 
 ## Installation as a shell function
 
