@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# don't get smart with me
-sd "$@" --help

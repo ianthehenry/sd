@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# print the path to a script
-sd "$@" --which

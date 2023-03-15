@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# print the contents of a script
-sd "$@" --cat

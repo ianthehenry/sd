@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# edit a script
-sd "$@" --edit

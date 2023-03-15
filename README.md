@@ -210,7 +210,7 @@ There are two ways to use `sd`:
 
 I prefer to use `sd` as a regular executable, but the function approach is more convenient if you already use a shell plugin manager that knows how to set up `fpath` automatically.
 
-Note that you cannot invoke "recursive `sd`" (that is, write scripts that themselves invoke `sd`) if you use the function approach. This includes all of the helper scripts in `sdefaults/` (explained below).
+Note that you cannot invoke "recursive `sd`" (that is, write scripts that themselves invoke `sd`) if you use the function approach, unless you're writing zsh scripts. But you probably shouldn't.
 
 ## Installation as a regular script
 
@@ -264,12 +264,6 @@ And then add it to the plugins list in your `~/.zshrc` before you source `oh-my-
 plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
 ```
-
-## `sd help command` vs. `sd command --help`
-
-There are some scripts in `sdefaults/` that you can copy into your own `~/sd` if you like. They'll let you type `sd cat foo bar` instead of `sd foo bar --cat` or `sd new foo -- echo hi` instead of `sd foo --new echo hi` (and so on for each of the built-in commands).
-
-These mostly exist for backwards compatibility with an earlier version of `sd`. You don't have to use them if you don't want to. Note that they will not work if you've installed `sd` as a shell function instead of an executable.
 
 # bash/fish autocompletion support
 
