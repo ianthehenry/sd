@@ -240,7 +240,7 @@ Note that changes you make to your `~/.zshrc` will only take effect for *future*
 
 ## Installation as a shell function
 
-You can just source `sd` in your `.zshrc` and set up completion manually (as described below), but `sd` is designed to be compatible with shell plugin managers.
+You can just source `sd` in your `.zshrc` and set up completion manually (as described [above](#installation-as-a-regular-script)), but `sd` is designed to be compatible with shell plugin managers.
 
 ### [Antigen](https://github.com/zsh-users/antigen)
 
