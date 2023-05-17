@@ -214,7 +214,7 @@ Note that you cannot invoke "recursive `sd`" (that is, write scripts that themse
 
 ## Installation as a regular script
 
-`sd` is not currently packaged in any package manager that I am aware of, but it should be pretty easy if you want to package it for your distribution. It's just a single script and a single completion file. Until that day:
+`sd` is currently only packaged for [nix](https://search.nixos.org/packages?channel=unstable&show=script-directory&from=0&size=50&sort=relevance&type=packages&query=script-directory) (there also is a home-manager module). It is pretty easy to package, feel free todo so for other distributions. It's just a single script and a single completion file. Until that day if your not using nix:
 
 1. Put the `sd` script somewhere on your `PATH`.
 2. Put the `_sd` completion script somewhere on your `fpath`.
