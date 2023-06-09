@@ -265,11 +265,52 @@ plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
 ```
 
+## Installation as home-manager module with nix package manager
+
+add config in your  `$HOME/.config/home-manager/home.nix`
+
+```nix
+{...}: {
+
+# start script directory
+
+home.programs.script-directory = {
+    script-directory = {
+        enable = true;
+        settings = {
+            SD_ROOT = "${config.home.homeDirectory}/scripts";
+            SD_EDITOR = "vim";
+        };
+    };
+
+};
+
+
+home.programs.zsh = {
+
+    # script directory module don't config zsh completion automatically
+    # manually append fpath into zsh.initExtra
+
+    initExtra = ''
+
+    fpath+="${pkgs.script-directory}/share/zsh/site-functions"
+    '';
+};
+# end script directory
+
+}
+
+```
+
+read more from [home-manager module source code](https://github.com/nix-community/home-manager/blob/master/modules/programs/script-directory.nix)
+
+
 # bash/fish autocompletion support
 
 Patrick Jackson contributed [an unofficial fish completion script](https://gist.github.com/patricksjackson/5065e4a9d8e825dafc7824112f17a5e6), which should be usable with some modification (as written it does not respect `SD_ROOT`, but it should act as a very good starting point if you use fish).
 
 Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, but there are apparently ways to hack something similar.
+
 
 # Changelog
 
