@@ -271,6 +271,41 @@ Patrick Jackson contributed [an unofficial fish completion script](https://gist.
 
 Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, but there are apparently ways to hack something similar.
 
+## Installation as home-manager module with nix package manager
+
+add config in your  `$HOME/.config/home-manager/home.nix`
+
+```nix
+{...}: {
+
+# start script directory
+
+home.programs.script-directory = {
+    script-directory = {
+        enable = true;
+        settings = {
+            SD_ROOT = "${config.home.homeDirectory}/scripts";
+            SD_EDITOR = "vim";
+        };
+    };
+
+};
+
+# script directory module don't config zsh completion automatically
+# manually add fpath into zshrc
+
+initExtra = ''
+fpath+="${pkgs.script-directory}/share/zsh/site-functions"
+'';
+# end script directory
+
+}
+
+```
+
+read more from home-manager 
+
+
 # Changelog
 
 ## v1.1.0 2022-10-30
