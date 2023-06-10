@@ -214,7 +214,37 @@ Note that you cannot invoke "recursive `sd`" (that is, write scripts that themse
 
 ## Installation as a regular script
 
-`sd` is currently only packaged for [nix](https://search.nixos.org/packages?channel=unstable&show=script-directory&from=0&size=50&sort=relevance&type=packages&query=script-directory) (there also is a home-manager module). It is pretty easy to package, feel free todo so for other distributions. It's just a single script and a single completion file. Until that day if your not using nix:
+## Using Nix
+
+As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query=script-directory) is the only package manager with `sd` pre-packaged (as `nixpkgs.service-directory`).
+
+`sd` is also [available in home manager](https://github.com/nix-community/home-manager/blob/master/modules/programs/script-directory.nix). You can install it by adding something like this to your `~/.config/home-manager/home.nix`:
+
+```nix
+{...}: {
+  home.programs.script-directory = {
+    script-directory = {
+      enable = true;
+      settings = {
+        # SD_ROOT = "${config.home.homeDirectory}/custom-script-directory";
+        # SD_EDITOR = "vim";
+        # SD_CAT = "bat";
+      };
+    };
+  };
+  
+  home.programs.zsh = {
+    # The script-directory module doesn't automatically configure
+    # zsh completion, so we still have manually add this:
+  
+    initExtra = ''
+    fpath+="${pkgs.script-directory}/share/zsh/site-functions"
+    '';
+  };
+}
+```
+
+## Without a package manager
 
 1. Put the `sd` script somewhere on your `PATH`.
 2. Put the `_sd` completion script somewhere on your `fpath`.
@@ -238,7 +268,7 @@ Note that changes you make to your `~/.zshrc` will only take effect for *future*
     $ fpath=(~/src/sd $fpath)
     $ compinit
 
-## Installation as a shell function
+## As a shell function
 
 You can just source `sd` in your `.zshrc` and set up completion manually (as described [above](#installation-as-a-regular-script)), but `sd` is designed to be compatible with shell plugin managers.
 
@@ -264,46 +294,6 @@ And then add it to the plugins list in your `~/.zshrc` before you source `oh-my-
 plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
 ```
-
-## Installation as home-manager module with nix package manager
-
-add config in your  `$HOME/.config/home-manager/home.nix`
-
-```nix
-{...}: {
-
-# start script directory
-
-home.programs.script-directory = {
-    script-directory = {
-        enable = true;
-        settings = {
-            SD_ROOT = "${config.home.homeDirectory}/scripts";
-            SD_EDITOR = "vim";
-        };
-    };
-
-};
-
-
-home.programs.zsh = {
-
-    # script directory module don't config zsh completion automatically
-    # manually append fpath into zsh.initExtra
-
-    initExtra = ''
-
-    fpath+="${pkgs.script-directory}/share/zsh/site-functions"
-    '';
-};
-# end script directory
-
-}
-
-```
-
-read more from [home-manager module source code](https://github.com/nix-community/home-manager/blob/master/modules/programs/script-directory.nix)
-
 
 # bash/fish autocompletion support
 
