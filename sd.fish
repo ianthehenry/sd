@@ -8,18 +8,28 @@
 
 # The '-f' on all complete commands is to disable file completions everywhere except for after the full command is written out
 
+# Use $HOME/sd as the default location, otherwise take the value of SD_ROOT
+function __sd_root_location
+    if set -q SD_ROOT
+        echo "$SD_ROOT"
+    else
+        echo "$HOME/sd"
+    end
+end
+
 # Create command completions for a subcommand
 # Takes a list of all the subcommands seen so far
-function __list_subcommand
+function __sd_list_subcommand
     # Handles fully nested subcommands
-    set basepath (string join '/' "$SD_ROOT" $argv)
+    set -l root_location (__sd_root_location)
+    set -l basepath (string join '/' "$root_location" $argv)
 
     # Total subcommands
     # Used so that we can ignore duplicate commands
     set -l commands
-    for file in (ls -d $basepath/*)
-        set cmd (basename $file .help)
-        set helpfile $cmd.help
+    for file in (ls -d "$basepath"/*)
+        set -l cmd (basename $file .help)
+        set -l helpfile $cmd.help
         if [ (basename $file) != "$helpfile" ]
             set commands $commands $cmd
         end
@@ -28,28 +38,28 @@ function __list_subcommand
     # Setup the check for when to show these commands
     # Basically you need to have seen everything in the path up to this point but not any commands in the current directory.
     # This will cause problems if you have a command with the same name as a directory parent.
-    set check
+    set -l check
     for arg in $argv
         set check (string join ' and ' $check "__fish_seen_subcommand_from $arg;")
     end
     set check (string join ' ' $check "and not __fish_seen_subcommand_from $commands")
 
     # Loop through the files using their full path names.
-    for file in (ls -d $basepath/*)
-        set cmd (basename $file .help)
-        set helpfile $cmd.help
+    for file in (ls -d "$basepath"/*)
+        set -l cmd (basename $file .help)
+        set -l helpfile $cmd.help
         if [ (basename $file) = "$helpfile" ]
             # This is the helpfile, use it for the help statement
-            set help (head -n1 "$file")
+            set -l help (head -n1 "$file")
             complete -f -c sd -a "$cmd" -d "$help" \
                 -n $check
         else if test -d "$file"
-            set help "$cmd commands"
-            __list_subcommand $argv $cmd
+            set -l help "$cmd commands"
+            __sd_list_subcommand $argv $cmd
             complete -f -c sd -a "$cmd" -d "$help" \
                 -n "$check"
         else
-            set help (sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+            set -l help (sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
             if not test -e "$helpfile"
                 complete -f -c sd -a "$cmd" -d "$help" \
                     -n "$check"
@@ -58,15 +68,15 @@ function __list_subcommand
     end
 end
 
-function __list_commands
+function __sd_list_commands
     # commands is used in the completions to know if we've seen the base commands
     set -l commands
 
     # Create a list of commands for this directory.
     # The list is used to know when to not show more commands from this directory.
     for file in $argv
-        set cmd (basename $file .help)
-        set helpfile $cmd.help
+        set -l cmd (basename $file .help)
+        set -l helpfile $cmd.help
         if [ (basename $file) != "$helpfile" ]
             # Ignore the special commands that take the paths as input.
             if not contains $cmd cat edit help new which
@@ -75,23 +85,23 @@ function __list_commands
         end
     end
     for file in $argv
-        set cmd (basename $file .help)
-        set helpfile $cmd.help
+        set -l cmd (basename $file .help)
+        set -l helpfile $cmd.help
         if [ (basename $file) = "$helpfile" ]
             # This is the helpfile, use it for the help statement
-            set help (head -n1 "$file")
+            set -l help (head -n1 "$file")
             complete -f -c sd -a "$cmd" -d "$help" \
                 -n "not __fish_seen_subcommand_from $commands"
         else if test -d "$file"
             # Directory, start recursing into subcommands
-            set help "$cmd commands"
-            __list_subcommand $cmd
+            set -l help "$cmd commands"
+            __sd_list_subcommand $cmd
             complete -f -c sd -a "$cmd" -d "$help" \
                 -n "not __fish_seen_subcommand_from $commands"
         else
             # Script
             # Pull the help test from the first non-shebang commented line.
-            set help (sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
+            set -l help (sed -nE -e '/^#!/d' -e '/^#/{s/^# *//; p; q;}' "$file")
             if not test -e "$helpfile"
                 complete -f -c sd -a "$cmd" -d "$help" \
                     -n "not __fish_seen_subcommand_from $commands"
@@ -100,5 +110,6 @@ function __list_commands
     end
 end
 
-# Hardcode the starting directory
-__list_commands "$SD_ROOT"/*
+set -l root_location (__sd_root_location)
+__sd_list_commands "$root_location"/*
+
