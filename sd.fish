@@ -6,8 +6,6 @@
 
 # Also note, completions are loaded at fish startup, not dynamically, so you need to reload fish for changes here to take effect.
 
-# Shell completions are arcane wizardry, so hopefully you don't need to touch this very often.
-
 # The '-f' on all complete commands is to disable file completions everywhere except for after the full command is written out
 
 # Create command completions for a subcommand
