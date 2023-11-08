@@ -295,9 +295,7 @@ plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
 ```
 
-# bash/fish autocompletion support
-
-Patrick Jackson contributed [an unofficial fish completion script](https://gist.github.com/patricksjackson/5065e4a9d8e825dafc7824112f17a5e6), which should be usable with some modification (as written it does not respect `SD_ROOT`, but it should act as a very good starting point if you use fish).
+# bash autocompletion support
 
 Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, but there are apparently ways to hack something similar.
 
