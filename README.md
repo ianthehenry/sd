@@ -247,13 +247,14 @@ As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query
 ## Without a package manager
 
 1. Put the `sd` script somewhere on your `PATH`.
-2. Put the `_sd` completion script somewhere on your `fpath`.
+2. For zsh completions, put the `_sd` completion script somewhere on your `fpath`.
+3. For fish completions, put the `sd.fish` completion script into your [completions directory](https://fishshell.com/docs/current/completions.html#where-to-put-completions), probably `~/.config/fish/completions/`.
 
 I like to symlink `sd` to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, you can do that by running something like:
 
     $ ln -s ~/src/sd/sd ~/bin/sd
 
-There isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. You should add that to your `.zshrc` file before the line where you call `compinit`. It should look something like this:
+With zsh, there isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. You should add that to your `.zshrc` file before the line where you call `compinit`. It should look something like this:
 
     # ~/.zshrc
 
