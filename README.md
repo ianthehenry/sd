@@ -216,7 +216,7 @@ Note that you cannot invoke "recursive `sd`" (that is, write scripts that themse
 
 ## Using Nix
 
-As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query=script-directory) is the only package manager with `sd` pre-packaged (as `nixpkgs.service-directory`).
+As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query=script-directory) is the only package manager with `sd` pre-packaged (as `nixpkgs.script-directory`).
 
 `sd` is also [available in home manager](https://github.com/nix-community/home-manager/blob/master/modules/programs/script-directory.nix). You can install it by adding something like this to your `~/.config/home-manager/home.nix`:
 
