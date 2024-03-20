@@ -247,13 +247,14 @@ As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query
 ## Without a package manager
 
 1. Put the `sd` script somewhere on your `PATH`.
-2. Put the `_sd` completion script somewhere on your `fpath`.
+2. For zsh completions, put the `_sd` completion script somewhere on your `fpath`.
+3. For fish completions, put the `sd.fish` completion script into your [completions directory](https://fishshell.com/docs/current/completions.html#where-to-put-completions), probably `~/.config/fish/completions/`.
 
 I like to symlink `sd` to `~/bin`, which is already on my path. If you've cloned this repo to `~/src/sd`, you can do that by running something like:
 
     $ ln -s ~/src/sd/sd ~/bin/sd
 
-There isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. You should add that to your `.zshrc` file before the line where you call `compinit`. It should look something like this:
+With zsh, there isn't really a standard place in your home directory to put completion scripts, so unless you've made your own, you'll probably want to add your clone directly to your `fpath`. You should add that to your `.zshrc` file before the line where you call `compinit`. It should look something like this:
 
     # ~/.zshrc
 
@@ -295,9 +296,7 @@ plugins+=(sd)
 source "$ZSH/oh-my-zsh.sh"
 ```
 
-# bash/fish autocompletion support
-
-Patrick Jackson contributed [an unofficial fish completion script](https://gist.github.com/patricksjackson/5065e4a9d8e825dafc7824112f17a5e6), which should be usable with some modification (as written it does not respect `SD_ROOT`, but it should act as a very good starting point if you use fish).
+# bash autocompletion support
 
 Bash doesn't support the fancy completion-with-description feature that is sort of the whole point of `sd`, but there are apparently ways to hack something similar.
 
