@@ -232,15 +232,6 @@ As far as I know, [Nix](https://search.nixos.org/packages?channel=unstable&query
       };
     };
   };
-  
-  home.programs.zsh = {
-    # The script-directory module doesn't automatically configure
-    # zsh completion, so we still have manually add this:
-  
-    initExtra = ''
-    fpath+="${pkgs.script-directory}/share/zsh/site-functions"
-    '';
-  };
 }
 ```
 
